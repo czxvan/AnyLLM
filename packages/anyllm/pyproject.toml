@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "anyllm"
+version = "0.1.0"
+description = "Unified LLM client with compatible OpenAI and g4f interfaces"
+readme = "README.md"
+requires-python = ">=3.8"
+
+dependencies = [
+    "pydantic>=2.0.0",
+]
+
+[project.optional-dependencies]
+openai = ["openai>=1.0.0"]
+g4f = ["g4f>=0.1.0"]
+all = ["openai>=1.0.0", "g4f>=0.1.0"]
+
+[tool.setuptools]
+packages = ["anyllm"]
