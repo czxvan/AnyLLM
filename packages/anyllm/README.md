@@ -5,6 +5,7 @@ A unified LLM client with compatible OpenAI and g4f interfaces.
 ## Features
 
 - 🔄 **Unified Interface**: Compatible with both OpenAI Client and g4f Client API styles
+- ⚡ **Async Support**: Full async/await support for high-performance applications
 - 🔌 **Multiple Backends**: Support for OpenAI, g4f (GPT4Free), and more
 - 🎯 **Auto Detection**: Automatically selects the appropriate backend based on parameters
 - 📦 **Lightweight Design**: Minimal core dependencies with flexible optional dependencies
@@ -35,7 +36,9 @@ pip install anyllm[all]
 
 ## Quick Start
 
-### Using OpenAI Backend
+### Synchronous Usage
+
+#### Using OpenAI Backend
 
 ```python
 from anyllm import Client
@@ -58,7 +61,7 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 ```
 
-### Using g4f Backend (Free)
+#### Using g4f Backend (Free)
 
 ```python
 from anyllm import Client
@@ -76,7 +79,7 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 ```
 
-### Using Custom OpenAI-Compatible Services (e.g., vLLM)
+#### Using Custom OpenAI-Compatible Services (e.g., vLLM)
 
 ```python
 from anyllm import Client
@@ -95,9 +98,102 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 ```
 
+### Asynchronous Usage
+
+AnyLLM provides full async/await support for high-performance applications.
+
+#### Basic Async Example
+
+```python
+import asyncio
+from anyllm import AsyncClient, ato_result
+
+async def main():
+    # Create async client
+    client = AsyncClient(
+        api_key="sk-xxx",
+        model="gpt-4"
+    )
+    
+    # Async request
+    response = await client.chat.completions.create(
+        messages=[{"role": "user", "content": "Hello!"}]
+    )
+    
+    # Convert to result
+    result = await ato_result(response)
+    print(result['content'])
+
+asyncio.run(main())
+```
+
+#### Async Streaming
+
+```python
+import asyncio
+from anyllm import AsyncClient
+
+async def main():
+    client = AsyncClient(model="gpt-4")
+    
+    response = await client.chat.completions.create(
+        messages=[{"role": "user", "content": "Write a poem"}],
+        stream=True
+    )
+    
+    # Use async for to iterate over chunks
+    async for chunk in response:
+        if chunk.choices[0].delta.content:
+            print(chunk.choices[0].delta.content, end="", flush=True)
+
+asyncio.run(main())
+```
+
+#### Concurrent Requests
+
+```python
+import asyncio
+from anyllm import AsyncClient, ato_result
+
+async def main():
+    client = AsyncClient(api_key="sk-xxx")
+    
+    # Send multiple requests concurrently
+    tasks = [
+        client.chat.completions.create(messages=f"What is {topic}?")
+        for topic in ["Python", "JavaScript", "Rust"]
+    ]
+    
+    responses = await asyncio.gather(*tasks)
+    
+    for response in responses:
+        result = await ato_result(response)
+        print(result['content'])
+
+asyncio.run(main())
+```
+
+#### Async Context Manager
+
+```python
+import asyncio
+from anyllm import AsyncClient
+
+async def main():
+    async with AsyncClient(api_key="sk-xxx") as client:
+        response = await client.chat.completions.create(
+            messages="What is Python?"
+        )
+        print(response.choices[0].message.content)
+
+asyncio.run(main())
+```
+
 ## API Reference
 
-### Client Initialization
+### Synchronous API
+
+#### Client Initialization
 
 ```python
 Client(
@@ -112,24 +208,52 @@ Client(
 )
 ```
 
-### Creating Chat Completions
+### Asynchronous API
+
+#### AsyncClient Initialization
 
 ```python
-client.chat.completions.create(
-    messages: Union[List[Dict[str, str]], str],  # Message list or single string
-    model: Optional[str] = None,                  # Model name
-    stream: bool = False,                         # Whether to stream output
-    temperature: Optional[float] = None,          # Temperature parameter (0-2)
-    max_tokens: Optional[int] = None,             # Maximum tokens to generate
-    top_p: Optional[float] = None,                # Nucleus sampling parameter
-    frequency_penalty: Optional[float] = None,    # Frequency penalty
-    presence_penalty: Optional[float] = None,     # Presence penalty
-    stop: Optional[Union[str, List[str]]] = None, # Stop sequences
-    **kwargs                                      # Other parameters
+AsyncClient(
+    api_key: Optional[str] = None,        # API key
+    base_url: Optional[str] = None,       # API base URL
+    model: Optional[str] = None,          # Default model name
+    backend: Optional[str] = None,        # Backend type ('openai', 'gpt4free')
+    provider: Optional[str] = None,       # Provider name (for g4f backend)
+    timeout: int = 60,                     # Request timeout in seconds
+    proxy: Optional[str] = None,          # Proxy settings
+    **kwargs                              # Other backend-specific parameters
 )
 ```
 
+### Creating Chat Completions
+
+Both sync and async clients use the same method signature:
+
+```python
+# Synchronous
+client.chat.completions.create(...)
+
+# Asynchronous
+await async_client.chat.completions.create(...)
+```
+
+**Parameters:**
+```python
+messages: Union[List[Dict[str, str]], str],  # Message list or single string
+model: Optional[str] = None,                  # Model name
+stream: bool = False,                         # Whether to stream output
+temperature: Optional[float] = None,          # Temperature parameter (0-2)
+max_tokens: Optional[int] = None,             # Maximum tokens to generate
+top_p: Optional[float] = None,                # Nucleus sampling parameter
+frequency_penalty: Optional[float] = None,    # Frequency penalty
+presence_penalty: Optional[float] = None,     # Presence penalty
+stop: Optional[Union[str, List[str]]] = None, # Stop sequences
+**kwargs                                      # Other parameters
+```
+
 ### Result Conversion
+
+#### Synchronous: `to_result`
 
 Use the `to_result` function to convert responses to a unified dictionary format:
 
@@ -155,9 +279,30 @@ print(result)
 # }
 ```
 
+#### Asynchronous: `ato_result`
+
+Use the `ato_result` function to convert async responses:
+
+```python
+from anyllm import AsyncClient, ato_result
+import asyncio
+
+async def main():
+    client = AsyncClient(model="gpt-4")
+    response = await client.chat.completions.create(
+        messages=[{"role": "user", "content": "Hello!"}]
+    )
+    
+    # 转换为标准化的字典格式
+    result = await ato_result(response)
+    print(result)
+
+asyncio.run(main())
+```
+
 ## Advanced Usage
 
-### Streaming Output
+### Synchronous Streaming Output
 
 ```python
 from anyllm import Client
