@@ -1,0 +1,66 @@
+[
+    {
+        "refer_link": "https://text.pollinations.ai/models",
+        "provider": "PollinationsAI",
+        "models": [
+            "gpt-4.1-nano",
+            "gemini-2.5-flash-lite",
+            "gpt-5-mini",
+            "o4-mini"
+        ]
+    },
+
+    {
+        "refer_link": "https://api.deepinfra.com/v1/openai/models",
+        "provider": "DeepInfra",
+        "models": [
+
+            "meta-llama/Llama-4-Scout-17B-16E-Instruct",
+            "meta-llama/Llama-Guard-4-12B",
+
+            "Qwen/Qwen3-235B-A22B-Instruct-2507",
+            "Qwen/Qwen3-235B-A22B-Thinking-2507",
+            "Qwen/Qwen3-30B-A3B",
+            "Qwen/Qwen3-32B",
+            "Qwen/Qwen3-14B",
+
+
+            "moonshotai/Kimi-K2-Thinking",
+            "moonshotai/Kimi-K2-Instruct-0905",
+
+            "microsoft/phi-4",
+
+            "openai/gpt-oss-120b",
+            "openai/gpt-oss-20b",
+
+
+            "google/gemma-3-4b-it",
+            "google/gemma-3-12b-it",
+
+
+            "deepseek-ai/DeepSeek-V3",
+            "deepseek-ai/DeepSeek-V3.1",
+            "deepseek-ai/DeepSeek-V3.1-Terminus",
+            "deepseek-ai/DeepSeek-V3.2",
+            "deepseek-ai/DeepSeek-R1-0528-Turbo",
+            "deepseek-ai/DeepSeek-R1-0528",
+            "deepseek-ai/DeepSeek-R1-Distill-Llama-70B",
+
+            "zai-org/GLM-4.6"
+        ]
+    },
+    {
+        "refer_link": "https://docs.github.com/en/copilot/reference/ai-models/supported-models",
+        "provider": "GithubCopilot",
+        "condition": "Need cookies; Have to streaming; API key from har change quickly",
+        "models": [
+            "gpt-4o",
+            "gemini-2.5-flash",
+            "gemini-2.5-pro",
+            "gemini-3-flash",
+            "gemini-3-pro",
+
+            "gpt-5"
+        ]
+    }
+]
