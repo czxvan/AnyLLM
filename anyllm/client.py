@@ -377,7 +377,7 @@ class AsyncClient(BaseClient):
         model: Optional[str] = None,
         backend: Optional[str] = None,
         provider: Optional[str] = None,
-        timeout: int = 60,
+        timeout: int = 600,
         proxy: Optional[str] = None,
         **kwargs
     ):
